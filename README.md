@@ -1,5 +1,5 @@
 # Spot
-![alt text](http://images.vfl.ru/ii/1516389267/a4e487b2/20225448_m.png)
+![alt text](http://i99.fastpic.ru/big/2018/0130/ae/ed0995b3627dd06b17cc3c258ba6a1ae.png)
 
 The tool for javascript mining in the web page of wi-fi network users.
 
@@ -17,7 +17,7 @@ Just
 
 `cd spot`
 
-`sh install.sh`
+`sudo bash install.sh`
 
 Using
 =====
@@ -59,7 +59,7 @@ Options
 `spot -h`
 > all commands are written here
 
-Uses
+Software
 =====
 This tool is using [MITMf](https://github.com/byt3bl33d3r/MITMf) and it's just a simplified version of the manual script injection.
 

